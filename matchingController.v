@@ -74,7 +74,7 @@ module matchingController #(
 					end
 					else begin
 						if (matched) begin
-							if (goodSamples < samlesMin>>1) begin
+							if (goodSamples < samplesMin>>1) begin
 								matched <= 1'b0;	//Still gets one chance.
 							end
 						end

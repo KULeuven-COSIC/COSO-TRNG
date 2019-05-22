@@ -21,7 +21,7 @@ module sampleToTransmitPerf # (
 		parameter 				NBLSB = 1			// Number of least significant bits to be used as random data. Allowed values: 1, 2, 4, and 8.
 	)(
 		input 					CSReq,				//	Request signal from the coherent sampler to indicate that the counter is stable.
-		input 					is_transmitting,	// Synchronisation signal from the sending module to indicate that the sender module is busy.
+		input 					is_transmitting,	// Synchronisation signal from the sending module to indicate that the module is busy sending.
 		input 					rst,					// Active high reset signal.
 		input 					clk,					// Clock input.
 		input 		[15:0] 	CSCnt,				// Coherent sampler counter input.	
@@ -29,17 +29,16 @@ module sampleToTransmitPerf # (
 		output reg				transmit				// Synchronisation signal to the sending module to indicate that 'tx_byte' can be transmitted.
 	);
 
-//	Parameters:
+//	Parameter:
 	localparam NBIt = 8/NBLSB;				//	Number coherent sampler counter values that are needed to fill one byte of random data.
-	localparam itLength = $clog2(NBIt);	// Length of iteration counter.
 
 // Counter state:
-	reg [itLength-1:0] it;
+	reg [$clog2(NBIt)-1:0] it;
 	
 // Sender finite state machine:
 	always @(posedge clk) begin
 		if (rst) begin
-			it 		<= {itLength{1'b0}};
+			it 		<= 0;
 			transmit <= 1'b0;
 			tx_byte 	<= 8'd0;
 		end

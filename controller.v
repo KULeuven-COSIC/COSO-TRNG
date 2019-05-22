@@ -2,48 +2,47 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 // 
-// Module name:    	controller
+// Module name:		controller
 // File name:			controller.v
 // Project name: 		COSO_TRNG
 // Target Device: 	Xilinx Spartan 6 XC6SLX16 FPGA (HECTOR daughterboard)
 // Description: 		This file contains the top level
 //							module that implements a
 //							reconfigurable COSO-TRNG.
-//	RTL diagram:		RTLDiagrams/topLevel.pdf
-//	Author:				Adriaan Peetermans
+// RTL diagram:		RTLDiagrams/topLevel.pdf
+// Author:				Adriaan Peetermans
 //							imec-COSIC, KU Leuven.
 //
 //////////////////////////////////////////////////////////////////////////////////
 
 module controller(
-		input 	n_reset,			//	Active low reset signal.
-		input 	[1:0] control,	//	Control signal (should be removed later).
-		input 	clkInP,			//	Positive differential clock input (125 MHz).
-		input 	clkInN,			//	Negative differential clock input (125 MHz).
-		output 	dataClkP,		//	Positive differential data clock output.
-		output 	dataClkN,		// Negative differential data clock output.
-		output 	dataP,			// Positive differential data output.
-		output 	dataN,			// Negative differential data output.
-		output 	syncOutP,		//	Positive differential synchronization output.
-		output 	syncOutN			// Negative differential synchronization output.
+		input 			n_reset,		// Active low reset signal.
+		input 			clkInP,		// Positive differential clock input (125 MHz).
+		input 			clkInN,		// Negative differential clock input (125 MHz).
+		output 			dataClkP,	// Positive differential data clock output.
+		output 			dataClkN,	// Negative differential data clock output.
+		output 			dataP,		// Positive differential data output.
+		output 			dataN,		// Negative differential data output.
+		output 			syncOutP,	// Positive differential synchronization output.
+		output 			syncOutN		// Negative differential synchronization output.
 	);
 	
 //////////////////////////////////////////////////////////////////////////////////
-//	Parameters
+// Parameters
 //////////////////////////////////////////////////////////////////////////////////
 
 //	Debug mode:
-	localparam							debugMode		= 1;		//	Generate additional hardware to facilitate debugging.
+	localparam							debugMode		= 1;		// Generate additional hardware to facilitate debugging.
 	
 //	Generate parameters:
-	localparam 							ROLength 		= 3;		//	Configurable ring oscillator length.
-	localparam 							CSCntWidth 		= 16;		//	Coherent sampler counter width.
+	localparam 							ROLength 		= 3;		// Configurable ring oscillator length.
+	localparam 							CSCntWidth 		= 16;		// Coherent sampler counter width.
 	localparam							NBLSB				= 1;		// Number of least significant bits to be used as random data.
 	
 //	Controller paraneters:
 	localparam							NBCheckbits		= 16;		// Number of least significant bits to be used to check coherent sampler counter magnitude.
-	localparam [NBCheckbits-1:0]	CSCntThreshL	= 74;		//	Coherent sampler counter minimum allowed value.
-	localparam [NBCheckbits-1:0]	CSCntThreshH	= 128;	//	Coherent sampler counter maximum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshL	= 74;		// Coherent sampler counter minimum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshH	= 128;	// Coherent sampler counter maximum allowed value.
 	localparam							NBSamplesLog	= 7;		// Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
 	localparam [NBSamplesLog-1:0]	samplesMin		= 64;		// Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
 	
@@ -51,7 +50,7 @@ module controller(
 	localparam 							ROCntLength		= 16;		// Frequency counter width (should be removed later).
 
 //////////////////////////////////////////////////////////////////////////////////	
-//	Reset and clock
+// Reset and clock
 //////////////////////////////////////////////////////////////////////////////////
 
 	wire rst, clk;
@@ -68,7 +67,7 @@ module controller(
 	);
 	
 //////////////////////////////////////////////////////////////////////////////////
-//	Entropy source and digitisation
+// Entropy source and digitisation
 //////////////////////////////////////////////////////////////////////////////////
 
 	wire 	[CSCntWidth-1:0] 	CSCnt;
@@ -111,8 +110,6 @@ module controller(
 //////////////////////////////////////////////////////////////////////////////////
 
 	wire matched, noFound;
-	
-	assign performanceMode = control[0];
 	
 //	Instantiation controller module:
 	matchingController #(
@@ -157,6 +154,17 @@ module controller(
 				.ClkCnt(ClkCnt)
 			);
 			
+//			Random bit shift register:
+			wire [7:0] randByte;
+	
+			randShifter RS (
+				.clk(clk),
+				.rst(rst),
+				.randBit(CSCnt[0]),
+				.CSReq(CSReq),
+				.randByte(randByte)
+			);
+			
 		end
 	endgenerate
 	
@@ -185,7 +193,8 @@ module controller(
 				.RO1Cnt(RO1Cnt),
 				.ClkCnt(ClkCnt),
 				.matched(matched),
-				.noFound(noFound)
+				.noFound(noFound),
+				.randBits(randByte)
 			);
 			
 		end

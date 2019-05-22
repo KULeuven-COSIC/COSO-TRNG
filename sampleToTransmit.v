@@ -14,7 +14,8 @@
 //								ROLength 	= 3
 //								ROCntLength	= 16
 //							Data will be send in packets to the receiving PC:
-//								
+//								| Size [bytes]	| 1		| 2		| 2		| 2		| 2		| 1				| 1				| 1									| 1			| 1		|
+//								| Data			| 0x55	| CSCnt	| RO0Cnt | RO1Cnt	| ClkCnt	| {00,RO1Sel}	| {00,RO0Sel	| {matched, noFound, 000000}	| randBits	| 0xaa	|
 //	RTL diagram:		No
 //	Author:				Adriaan Peetermans
 //							imec-COSIC, KU Leuven.
@@ -23,7 +24,7 @@
 
 module sampleToTransmit (
 		input 					CSReq,				//	Request signal from the coherent sampler module, to indicate that the counter is stable.
-		input 					is_transmitting,	// Synchronisation signal to the transmitter controller to indicate that this module is busy sending.
+		input 					is_transmitting,	// Synchronisation signal from the sending module to indicate that the module is busy sending.
 		input						rst,					//	Actibe high reset signal.
 		input						clk,					// Clock input.
 		input 					matched,				//	Signal from the configuration controller to indicate that a good configuration has been found.
@@ -61,7 +62,7 @@ module sampleToTransmit (
 			RO0Helper		<= 16'd0;
 			RO1Helper		<= 16'd0;
 			ClkHelper		<= 16'd0;
-			ROSelHelper		<= 8'd0;
+			ROSelHelper		<= 12'd0;
 			matchedHelper	<= 1'b0;
 			noFoundHelper	<= 1'b0;
 		end
@@ -85,76 +86,53 @@ module sampleToTransmit (
 						noFoundHelper	<= noFound;
 						transmitState 	<= 5'd2;
 					end
-					5'b00000: begin
+					5'd2: begin
 						tx_byte 			<= CSCntRegLSB;
-						transmitState 	<= 5'b00010;
-						//transmit 		<= 1'b1;
+						transmitState 	<= 5'd3;
 					end
-					5'b00010: begin
-						tx_byte 			<= {2'b00, ROSel[11:6]};
-						ROSelHelper		<= {2'b00, ROSel[5:0]};
-						transmitState 	<= 5'b01011;
+					5'd3: begin
+						tx_byte			<= RO0Helper[15:8];
+						transmitState	<= 5'd4;
 					end
-					5'b01011: begin
-						tx_byte			<= ROSelHelper;
-						transmitState	<= 5'b01100;
+					5'd4: begin
+						tx_byte			<= RO0Helper[7:0];
+						transmitState	<= 5'd5;
 					end
-					5'b01100: begin
-						tx_byte			<= 8'd42;
-						transmitState	<= 5'b01101;
-					end
-					5'b01101: begin
-						tx_byte			<= 8'd43;
-						transmitState	<= 5'b00011;
-					end
-					5'b00011: begin
-						tx_byte			<= RO0Cnt[15:8];
-						RO0Helper		<= RO0Cnt[7:0];
-						RO1Helper		<= RO1Cnt;
-						ClkHelper		<= ClkCnt;
-						transmitState	<= 5'b00101;
-					end
-					5'b00101: begin
-						tx_byte			<= RO0Helper;
-						transmitState	<= 5'b01001;
-					end
-					5'b01001: begin
+					5'd5: begin
 						tx_byte			<= RO1Helper[15:8];
-						transmitState	<= 5'b01010;
+						transmitState	<= 5'd6;
 					end
-					5'b01010: begin
+					5'd6: begin
 						tx_byte			<= RO1Helper[7:0];
-						transmitState	<= 5'b00111;
+						transmitState	<= 5'd7;
 					end
-					5'b00111: begin
+					5'd7: begin
 						tx_byte			<= ClkHelper[15:8];
-						transmitState	<= 5'b01000;
+						transmitState	<= 5'd8;
 					end
-					5'b01000: begin
+					5'd8: begin
 						tx_byte			<= ClkHelper[7:0];
-						transmitState	<= 5'b10000;
+						transmitState	<= 5'd9;
 					end
-					5'b10000: begin
-						tx_byte			<= duration[31:24];
-						durationHelper	<= duration[23:0];
-						transmitState	<= 5'b10001;
+					5'd9: begin
+						tx_byte 			<= {2'b00, ROSelHelper[11:6]};
+						transmitState	<= 5'd10;
 					end
-					5'b10001: begin
-						tx_byte			<= durationHelper[23:16];
-						transmitState	<= 5'b10010;
+					5'd10: begin
+						tx_byte			<= {2'b00, ROSelHelper[5:0]};
+						transmitState	<= 5'd11;
 					end
-					5'b10010: begin
-						tx_byte			<= durationHelper[15:8];
-						transmitState	<= 5'b10011;
+					5'd11: begin
+						tx_byte			<= {matchedHelper, noFoundHelper, 6'd0};
+						transmitState	<= 5'd12;
 					end
-					5'b10011: begin
-						tx_byte			<= durationHelper[7:0];
-						transmitState	<= 5'b00110;
+					5'd12: begin
+						tx_byte			<= randBits;
+						transmitState	<= 5'd13;
 					end
-					5'b00110: begin
+					5'd13: begin
 						tx_byte			<= 8'haa;
-						transmitState	<= 5'b00100;
-						//transmit			<= 1'b1;
+						transmitState	<= 5'd0;
 					end
 				endcase
 			end
@@ -164,7 +142,7 @@ module sampleToTransmit (
 		end
 	end
 	
-	//CSCnt register	
+//	CSCnt register:
 	always @(posedge clk) begin
 		if (rst) begin
 			CSCntReg <= 16'd0;

@@ -1,54 +1,48 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: KULeuven
-// Engineer: Adriaan Peetermans
-// 
-// Create Date:    14:47:45 10/04/2018 
-// Design Name: 
-// Module Name:    sendController 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
-module sendController(
-	input clk,
-	input rst,
-	// output lines
-	output dataClkP,
-	output dataClkN,
-	output dataP,
-	output dataN,
-	output syncOutP,
-	output syncOutN,
-	// transmit
-	input transmit,
-	input [7:0] tx_byte,
-	// state
-	output reg is_transmitting
-    );
-	 
-	reg dataOut = 1'b0;
-	wire clkOut;
-	reg syncOut = 1'b0;
 
-	reg [7:0] txByteBuf = 8'd0;
+//////////////////////////////////////////////////////////////////////////////////
+// 
+// Module name:    	sendController
+// File name:			sendController.v
+// Project name: 		COSO_TRNG
+// Target Device: 	Xilinx Spartan 6 XC6SLX16 FPGA (HECTOR daughterboard)
+// Description: 		This file contains the implementation of a module that
+//							enables comunication with a PC.
+//	RTL diagram:		No
+//	Author:				Adriaan Peetermans
+//							imec-COSIC, KU Leuven.
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+module sendController(
+		input 		clk,					// Clock input.
+		input 		rst,					// Active high reset signal.
+		input 		transmit,			// Synchronisation signal from the send controller to indicate that 'tx_byte' can be transmitted.
+		input [7:0] tx_byte,				// Data to be transmitted from the send controller.
+		output 		dataClkP,			// Positive differential data clock output.
+		output 		dataClkN,			// Negative differential data clock output.
+		output 		dataP,				// Positive differential data output.
+		output 		dataN,				// Negative differential data output.
+		output 		syncOutP,			// Positive differential synchronization output.
+		output 		syncOutN,			// negative differential synchronization output.
+		output reg 	is_transmitting	// Synchronisation signal to the sending controller to indicate that this module is busy sending.
+	);
 	
-	reg trState = 1'b0;
-	reg [2:0] trBitCnt = 3'd7;
-	reg [1:0] trSyncCnt = 2'd0;
-	reg clkOutSel = 1'b0;
+//	State and data registers:
+	wire 			clkOut;
+	reg 			dataOut 		= 1'b0;
+	reg 			syncOut 		= 1'b0;
+	reg [7:0] 	txByteBuf 	= 8'd0;
+	reg 			trState 		= 1'b0;
+	reg [2:0] 	trBitCnt 	= 3'd7;
+	reg [1:0] 	trSyncCnt 	= 2'd0;
+	reg 			clkOutSel 	= 1'b0;
 	
-	localparam TR_IDLE 		= 1'b0;
-	localparam TR_TRANS1 	= 1'b1;
+//	State parameters:
+	localparam IDLE 			= 1'b0;
+	localparam TRANS 			= 1'b1;
 	
+//	Output buffers:
 	OBUFDS #(
 		.IOSTANDARD("DEFAULT")
 	) OBUFDS_DATA (
@@ -75,7 +69,7 @@ module sendController(
 	
 	assign clkOut = clkOutSel ? clk : 1'b0;
 	
-	//Send controller
+// Sender finite state machine:
 	always @(posedge clk) begin
 		if (rst) begin
 			dataOut <= 1'b0;
@@ -89,24 +83,24 @@ module sendController(
 		end
 		else begin
 			case(trState)
-				TR_IDLE : begin
+				IDLE : begin
 					clkOutSel <= 1'b0;
 					syncOut <= 1'b0;
 					if (transmit == 1'b1) begin
-						trState <= TR_TRANS1;
+						trState <= TRANS;
 						txByteBuf <= tx_byte;
 						is_transmitting <= 1'b1;
 					end
 					else begin
-						trState <= TR_IDLE;
+						trState <= IDLE;
 					end
 				end
-				TR_TRANS1 : begin
+				TRANS : begin
 					clkOutSel <= 1'b1;
 					dataOut <= txByteBuf[trBitCnt];
 					if (trBitCnt == 3'd0) begin
 						trBitCnt <= 3'd7;
-						trState <= TR_IDLE;
+						trState <= IDLE;
 						is_transmitting <= 1'b0;
 						if (trSyncCnt == 2'd3) begin
 							trSyncCnt <= 2'd0;
@@ -120,7 +114,7 @@ module sendController(
 					else begin
 						syncOut <= 1'b0;
 						trBitCnt <= trBitCnt - 1;
-						trState <= TR_TRANS1;
+						trState <= TRANS;
 					end
 				end
 			endcase
