@@ -137,7 +137,7 @@ module controller(
 //////////////////////////////////////////////////////////////////////////////////
 	
 	generate
-		if (debugMode) begin
+		if (debugMode) begin : scopeDebug
 		
 //			RO counter
 			wire [ROCntLength-1:0] RO0Cnt, ClkCnt, RO1Cnt;
@@ -189,12 +189,12 @@ module controller(
 				.transmit(transmit),
 				.CSCnt(CSCnt),
 				.ROSel({RO1Sel, RO0Sel}),
-				.RO0Cnt(RO0Cnt),
-				.RO1Cnt(RO1Cnt),
-				.ClkCnt(ClkCnt),
+				.RO0Cnt(scopeDebug.RO0Cnt),
+				.RO1Cnt(scopeDebug.RO1Cnt),
+				.ClkCnt(scopeDebug.ClkCnt),
 				.matched(matched),
 				.noFound(noFound),
-				.randBits(randByte)
+				.randBits(scopeDebug.randByte)
 			);
 			
 		end
