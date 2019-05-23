@@ -6,7 +6,7 @@ This is a reference implementation for the COherent Sampling ring Oscillator bas
 		* [matchedNAND](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/matchedNAND.v)
 		* [matchedStage](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/matchedStage.v)
 	* [coherentSampler](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/coherentSampler.v)
-		* [asyncCounter](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/Spartan 6/asyncCounter.v)
+		* [asyncCounter](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/asyncCounter.v)
 			* [TFF](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/TFF.v)
 	* [matchingController](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/matchingController.v)
 	* [ROCounter (debug)](https://github.com/KULeuven-COSIC/COSO-TRNG/blob/master/Spartan%206/ROCounter.v)
