@@ -32,7 +32,7 @@ module controller(
 //////////////////////////////////////////////////////////////////////////////////
 
 //	Debug mode:
-	localparam							debugMode		= 1;		// Generate additional hardware to facilitate debugging.
+	localparam							debugMode		= 0;		// Generate additional hardware to facilitate debugging.
 	
 //	Generate parameters:
 	localparam 							ROLength 		= 3;		// Configurable ring oscillator length.
