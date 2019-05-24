@@ -24,13 +24,13 @@ module sampleToTransmitPerf # (
 		input 					is_transmitting,	// Synchronisation signal from the sending module to indicate that the module is busy sending.
 		input 					rst,					// Active high reset signal.
 		input 					clk,					// Clock input.
-		input 		[15:0] 	CSCnt,				// Coherent sampler counter input.	
+		input 		[15:0] 	CSCnt,				// Coherent sampler counter input.
 		output reg	[7:0] 	tx_byte,				// Byte to be transmitted to the PC.
 		output reg				transmit				// Synchronisation signal to the sending module to indicate that 'tx_byte' can be transmitted.
 	);
 
 //	Parameter:
-	localparam NBIt = 8/NBLSB;				//	Number coherent sampler counter values that are needed to fill one byte of random data.
+	localparam NBIt = 8/NBLSB;	//	Number coherent sampler counter values that are needed to fill one byte of random data.
 
 // Counter state:
 	reg [$clog2(NBIt)-1:0] it;

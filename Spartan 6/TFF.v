@@ -17,11 +17,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module TFF(
-		input clk,		//	Clock input.
-		input clr,		// Active high, asynchronous reset signal.
-		input clkEn,	// Enable signal.
-		output outP,	//	Output signal.
-		output outN		// Inverted ouput signal.
+		input 	clk,		//	Clock input.
+		input 	clr,		// Active high, asynchronous reset signal.
+		input 	clkEn,	// Enable signal.
+		output 	outP,		//	Output signal.
+		output 	outN		// Inverted ouput signal.
 	);
 
 //	Instantiation of data flip-flop:

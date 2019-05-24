@@ -47,7 +47,7 @@ module controller(
 	localparam [NBSamplesLog-1:0]	samplesMin		= 64;		// Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
 	
 //	RO counter parameters:
-	localparam 							ROCntLength		= 16;		// Frequency counter width (should be removed later).
+	localparam 							ROCntLength		= 16;		// Frequency counter width.
 
 //////////////////////////////////////////////////////////////////////////////////	
 // Reset and clock
@@ -97,8 +97,8 @@ module controller(
 	coherentSampler #(
 		.cntWidth(CSCntWidth)
 	) CSSampler (
-		.clk0(RO0Clk),		//Sampled clock
-		.clk1(RO1Clk),		//Sampling clock
+		.clk0(RO0Clk),		// Sampled clock
+		.clk1(RO1Clk),		// Sampling clock
 		.rst(rst),
 		.cnt(CSCnt),
 		.req(CSReq),
@@ -216,7 +216,7 @@ module controller(
 		end
 	endgenerate
 	
-//	Instantiation transmitting controller:
+//	Instantiation transmitting module:
 	sendController SC(
 		.clk(clk),
 		.rst(rst),

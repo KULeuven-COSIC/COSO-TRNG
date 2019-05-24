@@ -84,6 +84,7 @@ module coherentSampler # (
 		.CLR(ack),
 		.D(1'b1)
 	);
+
 	assign cntRST = ~cntRSTN;
 
 endmodule

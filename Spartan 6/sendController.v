@@ -32,10 +32,10 @@ module sendController(
 	wire 			clkOut;
 	reg 			dataOut 		= 1'b0;
 	reg 			syncOut 		= 1'b0;
-	reg [7:0] 	txByteBuf 	= 8'd0;
-	reg 			trState 		= 1'b0;
-	reg [2:0] 	trBitCnt 	= 3'd7;
-	reg [1:0] 	trSyncCnt 	= 2'd0;
+	reg [7:0] 	byteBuf 		= 8'd0;
+	reg 			state 		= 1'b0;
+	reg [2:0] 	bitCnt 		= 3'd7;
+	reg [1:0] 	syncCnt 		= 2'd0;
 	reg 			clkOutSel 	= 1'b0;
 	
 //	State parameters:
@@ -72,49 +72,49 @@ module sendController(
 // Sender finite state machine:
 	always @(posedge clk) begin
 		if (rst) begin
-			dataOut <= 1'b0;
-			syncOut <= 1'b0;
-			txByteBuf <= 8'd0;
-			trState <= 3'd0;
-			is_transmitting <= 1'b0;
-			trBitCnt <= 3'd7;
-			trSyncCnt <= 2'd0;
-			clkOutSel <= 1'b0;
+			dataOut 				<= 1'b0;
+			syncOut 				<= 1'b0;
+			byteBuf 				<= 8'd0;
+			state 				<= 3'd0;
+			is_transmitting 	<= 1'b0;
+			bitCnt 				<= 3'd7;
+			syncCnt 				<= 2'd0;
+		clkOutSel 				<= 1'b0;
 		end
 		else begin
-			case(trState)
+			case(state)
 				IDLE : begin
-					clkOutSel <= 1'b0;
-					syncOut <= 1'b0;
+					clkOutSel 	<= 1'b0;
+					syncOut 		<= 1'b0;
 					if (transmit == 1'b1) begin
-						trState <= TRANS;
-						txByteBuf <= tx_byte;
-						is_transmitting <= 1'b1;
+						state 				<= TRANS;
+						byteBuf 				<= tx_byte;
+						is_transmitting 	<= 1'b1;
 					end
 					else begin
-						trState <= IDLE;
+						state <= IDLE;
 					end
 				end
 				TRANS : begin
-					clkOutSel <= 1'b1;
-					dataOut <= txByteBuf[trBitCnt];
-					if (trBitCnt == 3'd0) begin
-						trBitCnt <= 3'd7;
-						trState <= IDLE;
-						is_transmitting <= 1'b0;
-						if (trSyncCnt == 2'd3) begin
-							trSyncCnt <= 2'd0;
+					clkOutSel 	<= 1'b1;
+					dataOut 		<= byteBuf[bitCnt];
+					if (bitCnt == 3'd0) begin
+						bitCnt 				<= 3'd7;
+						state 				<= IDLE;
+						is_transmitting 	<= 1'b0;
+						if (syncCnt == 2'd3) begin
+							syncCnt <= 2'd0;
 							syncOut <= 1'b1;
 						end
 						else begin
 							syncOut <= 1'b0;
-							trSyncCnt <= trSyncCnt + 1;
+							syncCnt <= syncCnt + 1;
 						end
 					end
 					else begin
-						syncOut <= 1'b0;
-						trBitCnt <= trBitCnt - 1;
-						trState <= TRANS;
+						syncOut 	<= 1'b0;
+						bitCnt 	<= bitCnt - 1;
+						state 	<= TRANS;
 					end
 				end
 			endcase

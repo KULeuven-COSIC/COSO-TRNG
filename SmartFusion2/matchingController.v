@@ -5,7 +5,7 @@
 // Module name:    	matchingController
 // File name:			matchingController.v
 // Project name: 		COSO_TRNG
-// Target Device: 	Xilinx Spartan 6 XC6SLX16 FPGA (HECTOR daughterboard)
+// Target Device: 	Microsemi SmartFusion2 M2S025 FPGA (HECTOR daughterboard)
 // Description: 		This file contains the
 //							implementation of a controller
 //							finite state machine. It will drive
@@ -28,17 +28,17 @@ module matchingController #(
 		parameter								NBSamplesLog	= 7,							//	Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
 		parameter	[NBSamplesLog-1:0]	samplesMin		= 1<<(NBSamplesLog-1)	//	Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
 	)(
-		input 									clk,												//	Clock input.
-		input 									rst,												//	Active high reset signal.
-		input 		[CSCntLength-1:0] 	CSCnt,											//	Coherent sampler counter input.
-		input										CSReq,											//	Request signal from the coherent sampler module, to indicate that the counter is stable.
-		output 		[ROLength*2-1:0] 		RO0Sel,											//	RO0 configuration signal output.
-		output 		[ROLength*2-1:0] 		RO1Sel,											// RO1 configuration signal output.
-		output reg								CSAck,											// Acknowledge signal to the coherent sampler module, to indictate that the counter value has been read.
-		output reg								matched,											// Signal to indicate the user that a good configuration has been found.
-		output reg								noFound											//	Signal to indicate the user that bo good configuration could be found.											
+		input 								clk,													//	Clock input.
+		input 								rst,													//	Active high reset signal.
+		input 		[CSCntLength-1:0] CSCnt,												//	Coherent sampler counter input.
+		input									CSReq,												//	Request signal from the coherent sampler module, to indicate that the counter is stable.
+		output 		[ROLength*2-1:0] 	RO0Sel,												//	RO0 configuration signal output.
+		output 		[ROLength*2-1:0] 	RO1Sel,												// RO1 configuration signal output.
+		output reg							CSAck,												// Acknowledge signal to the coherent sampler module, to indictate that the counter value has been read.
+		output reg							matched,												// Signal to indicate the user that a good configuration has been found.
+		output reg							noFound												//	Signal to indicate the user that bo good configuration could be found.
 	);
-	
+
 //	Parameter:
 	localparam NBSamples = (1<<NBSamplesLog)-1;	//	Number of accumulated samples to check the coherent sampler counter magnitude.
 	
