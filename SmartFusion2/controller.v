@@ -40,10 +40,11 @@ module controller(
 	
 //	Controller paraneters:
 	localparam							NBCheckbits		= 16;		// Number of least significant bits to be used to check coherent sampler counter magnitude.
-	localparam [NBCheckbits-1:0]	CSCntThreshL	= 74;		// Coherent sampler counter minimum allowed value.
-	localparam [NBCheckbits-1:0]	CSCntThreshH	= 128;	// Coherent sampler counter maximum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshL	= 94;		// Coherent sampler counter minimum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshH	= 192;	// Coherent sampler counter maximum allowed value.
 	localparam							NBSamplesLog	= 7;		// Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
 	localparam [NBSamplesLog-1:0]	samplesMin		= 64;		// Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
+	localparam							MaxLockCntLog	= 8;		// Number of bits for the lock counter, which prevents oscillation locks.
 	
 //	RO counter parameters:
 	localparam 							ROCntLength		= 16;		// Frequency counter width.
@@ -111,7 +112,7 @@ module controller(
 //	Controller
 //////////////////////////////////////////////////////////////////////////////////
 
-	wire matched, noFound;
+	wire matched, noFound, locked;
 
 //	Instantiation controller module:
 	matchingController #(
@@ -121,7 +122,8 @@ module controller(
 		.CSCntThreshH(CSCntThreshH),
 		.ROLength(ROLength),
 		.NBSamplesLog(NBSamplesLog),
-		.samplesMin(samplesMin)
+		.samplesMin(samplesMin),
+		.MaxLockCntLog(MaxLockCntLog)
 	) MC (
 		.clk(clk), 
 		.rst(rst), 
@@ -131,7 +133,8 @@ module controller(
 		.RO1Sel(RO1Sel),
 		.CSAck(CSAck),
 		.matched(matched),
-		.noFound(noFound)
+		.noFound(noFound),
+		.locked(locked)
 	);
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -196,6 +199,7 @@ module controller(
 				.ClkCnt(scopeDebug.ClkCnt),
 				.matched(matched),
 				.noFound(noFound),
+				.locked(locked),
 				.randBits(scopeDebug.randByte)
 			);
 

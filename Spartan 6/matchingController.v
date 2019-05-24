@@ -26,17 +26,19 @@ module matchingController #(
 		parameter	[NBCheckbits-1:0]		CSCntThreshH	= 1<<(NBCheckbits-1),	//	Coherent sampler counter maximum allowed value.
 		parameter								ROLength			= 3,							//	Configurable ring oscillator length.
 		parameter								NBSamplesLog	= 7,							//	Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
-		parameter	[NBSamplesLog-1:0]	samplesMin		= 1<<(NBSamplesLog-1)	//	Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
+		parameter	[NBSamplesLog-1:0]	samplesMin		= 1<<(NBSamplesLog-1),	//	Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
+		parameter								MaxLockCntLog	= 8							// Number of bits for the lock counter, which prevents oscillation locks.
 	)(
-		input 									clk,												//	Clock input.
-		input 									rst,												//	Active high reset signal.
-		input 		[CSCntLength-1:0] 	CSCnt,											//	Coherent sampler counter input.
-		input										CSReq,											//	Request signal from the coherent sampler module, to indicate that the counter is stable.
-		output 		[ROLength*2-1:0] 		RO0Sel,											//	RO0 configuration signal output.
-		output 		[ROLength*2-1:0] 		RO1Sel,											// RO1 configuration signal output.
-		output reg								CSAck,											// Acknowledge signal to the coherent sampler module, to indictate that the counter value has been read.
-		output reg								matched,											// Signal to indicate the user that a good configuration has been found.
-		output reg								noFound											//	Signal to indicate the user that bo good configuration could be found.											
+		input 								clk,												//	Clock input.
+		input 								rst,												//	Active high reset signal.
+		input 		[CSCntLength-1:0]	CSCnt,											//	Coherent sampler counter input.
+		input									CSReq,											//	Request signal from the coherent sampler module, to indicate that the counter is stable.
+		output 		[ROLength*2-1:0] 	RO0Sel,											//	RO0 configuration signal output.
+		output 		[ROLength*2-1:0] 	RO1Sel,											// RO1 configuration signal output.
+		output reg							CSAck,											// Acknowledge signal to the coherent sampler module, to indictate that the counter value has been read.
+		output reg							matched,											// Signal to indicate the user that a good configuration has been found.
+		output reg							noFound,											//	Signal to indicate the user that bo good configuration could be found.											
+		output reg							locked											// Signal to indicate the user that the two oscillators might be locked.
 	);
 	
 //	Parameter:
@@ -50,6 +52,9 @@ module matchingController #(
 	assign RO0Sel = ROSel[ROLength*2-1:0];
 	assign RO1Sel = ROSel[ROLength*4-1:ROLength*2];
 	
+//	Counter and register to indicate oscillator lock:
+	reg [MaxLockCntLog-1:0] lockCnt;
+	
 // Controller finite state machine:
 	always @(posedge clk) begin
 		if (rst) begin
@@ -59,10 +64,14 @@ module matchingController #(
 			ROSel			<= {ROLength*4{1'b0}};
 			matched		<= 1'b0;
 			noFound		<=	1'b0;
+			lockCnt		<= {MaxLockCntLog{1'b0}};
+			locked		<= 1'b0;
 		end
 		else begin
 			if (CSReq == 1'b1) begin
-				CSAck <= 1'b1;
+				CSAck 	<= 1'b1;
+				lockCnt 	<= {MaxLockCntLog{1'b0}};
+				locked 	<= 1'b0;
 				if ((CSCnt[CSCntLength-1:CSCntLength-NBCheckbits] >= CSCntThreshL) && (CSCnt[CSCntLength-1:CSCntLength-NBCheckbits] < CSCntThreshH)) begin
 					goodSamples <= goodSamples + 1;
 				end
@@ -74,7 +83,7 @@ module matchingController #(
 					end
 					else begin
 						if (matched) begin
-							if (goodSamples < samplesMin>>1) begin
+							if (goodSamples < samplesMin>>4) begin
 								matched <= 1'b0;	//Still gets one chance.
 							end
 						end
@@ -84,6 +93,17 @@ module matchingController #(
 								noFound <= 1'b1;
 							end
 						end
+					end
+				end
+			end
+			else begin
+				lockCnt <= lockCnt + 1;
+				if (lockCnt == {MaxLockCntLog{1'b1}}) begin
+					matched 	<= 1'b0;
+					locked	<= 1'b1;
+					ROSel <= ROSel + 1;
+					if (ROSel == {ROLength*4{1'b1}}) begin
+						noFound <= 1'b1;
 					end
 				end
 			end

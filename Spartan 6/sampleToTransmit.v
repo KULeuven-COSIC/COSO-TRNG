@@ -29,6 +29,7 @@ module sampleToTransmit (
 		input						clk,					// Clock input.
 		input 					matched,				//	Signal from the configuration controller to indicate that a good configuration has been found.
 		input						noFound,				//	Signal from the configuration controller to indicate that no good configuration could be found.
+		input						locked,				// Signal to indicate the user that the two oscillators might be locked.
 		input			[15:0]	CSCnt,				// Coherent sampler counter value.
 		input			[11:0]	ROSel,				//	Configuration signal from the configuration controller.
 		input			[15:0]	RO0Cnt,				//	RO0 counter value.
@@ -50,7 +51,7 @@ module sampleToTransmit (
 //	Helper registers to store data during transmission:
 	reg 	[15:0]	RO0Helper, RO1Helper, ClkHelper;
 	reg 	[11:0]	ROSelHelper;
-	reg				matchedHelper, noFoundHelper;
+	reg				matchedHelper, noFoundHelper, lockedHelper;
 	
 // Sender finite state machine:
 	always @(posedge clk) begin
@@ -65,6 +66,7 @@ module sampleToTransmit (
 			ROSelHelper		<= 12'd0;
 			matchedHelper	<= 1'b0;
 			noFoundHelper	<= 1'b0;
+			lockedHelper	<= 1'b0;
 		end
 		else begin
 			if ((is_transmitting == 1'b0) && (transmit == 1'b0)) begin
@@ -84,6 +86,7 @@ module sampleToTransmit (
 						ROSelHelper		<= ROSel;
 						matchedHelper	<= matched;
 						noFoundHelper	<= noFound;
+						lockedHelper	<= locked;
 						transmitState 	<= 5'd2;
 					end
 					5'd2: begin
@@ -123,7 +126,7 @@ module sampleToTransmit (
 						transmitState	<= 5'd11;
 					end
 					5'd11: begin
-						tx_byte			<= {matchedHelper, noFoundHelper, 6'd0};
+						tx_byte			<= {matchedHelper, noFoundHelper, lockedHelper, 5'd0};
 						transmitState	<= 5'd12;
 					end
 					5'd12: begin
