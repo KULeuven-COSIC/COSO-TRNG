@@ -38,7 +38,7 @@ module matchingController #(
 		output reg							CSAck,												// Acknowledge signal to the coherent sampler module, to indictate that the counter value has been read.
 		output reg							matched,												// Signal to indicate the user that a good configuration has been found.
 		output reg							noFound,												//	Signal to indicate the user that bo good configuration could be found.
-		output reg							locked											// Signal to indicate the user that the two oscillators might be locked.
+		output reg							locked												// Signal to indicate the user that the two oscillators might be locked.
 	);
 
 //	Parameter:

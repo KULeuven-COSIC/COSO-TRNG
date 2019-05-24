@@ -41,7 +41,7 @@ module sampleToTransmit (
 	);
 	
 //	State register:
-	reg	[4:0] 	transmitState;
+	reg	[3:0] 	transmitState;
 
 // Helper register to store the coherent sampler counter value when it is stable:
 	reg 	[15:0] 	CSCntReg;
@@ -57,7 +57,7 @@ module sampleToTransmit (
 	always @(posedge clk) begin
 		if (rst) begin
 			tx_byte 			<= 8'd0;
-			transmitState 	<= 5'd0;
+			transmitState 	<= 4'd0;
 			transmit 		<= 1'b0;
 			CSCntRegLSB		<= 8'd0;
 			RO0Helper		<= 16'd0;
@@ -72,11 +72,11 @@ module sampleToTransmit (
 			if ((is_transmitting == 1'b0) && (transmit == 1'b0)) begin
 				transmit <= 1'b1;
 				case (transmitState)
-					5'd0: begin
+					4'd0: begin
 						tx_byte 			<= 8'h55;
-						transmitState 	<= 5'd1;
+						transmitState 	<= 4'd1;
 					end
-					5'd1: begin
+					4'd1: begin
 						tx_byte 			<= CSCntReg[15:8];
 //						Update helpers:
 						CSCntRegLSB		<= CSCntReg[7:0];
@@ -87,55 +87,55 @@ module sampleToTransmit (
 						matchedHelper	<= matched;
 						noFoundHelper	<= noFound;
 						lockedHelper	<= locked;
-						transmitState 	<= 5'd2;
+						transmitState 	<= 4'd2;
 					end
-					5'd2: begin
+					4'd2: begin
 						tx_byte 			<= CSCntRegLSB;
-						transmitState 	<= 5'd3;
+						transmitState 	<= 4'd3;
 					end
-					5'd3: begin
+					4'd3: begin
 						tx_byte			<= RO0Helper[15:8];
-						transmitState	<= 5'd4;
+						transmitState	<= 4'd4;
 					end
-					5'd4: begin
+					4'd4: begin
 						tx_byte			<= RO0Helper[7:0];
-						transmitState	<= 5'd5;
+						transmitState	<= 4'd5;
 					end
-					5'd5: begin
+					4'd5: begin
 						tx_byte			<= RO1Helper[15:8];
-						transmitState	<= 5'd6;
+						transmitState	<= 4'd6;
 					end
-					5'd6: begin
+					4'd6: begin
 						tx_byte			<= RO1Helper[7:0];
-						transmitState	<= 5'd7;
+						transmitState	<= 4'd7;
 					end
-					5'd7: begin
+					4'd7: begin
 						tx_byte			<= ClkHelper[15:8];
-						transmitState	<= 5'd8;
+						transmitState	<= 4'd8;
 					end
-					5'd8: begin
+					4'd8: begin
 						tx_byte			<= ClkHelper[7:0];
-						transmitState	<= 5'd9;
+						transmitState	<= 4'd9;
 					end
-					5'd9: begin
+					4'd9: begin
 						tx_byte 			<= {2'b00, ROSelHelper[11:6]};
-						transmitState	<= 5'd10;
+						transmitState	<= 4'd10;
 					end
-					5'd10: begin
+					4'd10: begin
 						tx_byte			<= {2'b00, ROSelHelper[5:0]};
-						transmitState	<= 5'd11;
+						transmitState	<= 4'd11;
 					end
-					5'd11: begin
+					4'd11: begin
 						tx_byte			<= {matchedHelper, noFoundHelper, lockedHelper, 5'd0};
-						transmitState	<= 5'd12;
+						transmitState	<= 4'd12;
 					end
-					5'd12: begin
+					4'd12: begin
 						tx_byte			<= randBits;
-						transmitState	<= 5'd13;
+						transmitState	<= 4'd13;
 					end
-					5'd13: begin
+					4'd13: begin
 						tx_byte			<= 8'haa;
-						transmitState	<= 5'd0;
+						transmitState	<= 4'd0;
 					end
 				endcase
 			end
