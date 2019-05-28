@@ -17,7 +17,7 @@
 
 module controller(
 		input 	n_reset,		// Active low reset signal.
-		input 	clk_in,		// Clock input (? MHz).
+		input 	clk_in,		// Clock input (12 MHz).
 		output 	dataClkP,	// Positive differential data clock output.
 		output 	dataClkN,	// Negative differential data clock output.
 		output 	dataP,		// Positive differential data output.
@@ -31,7 +31,7 @@ module controller(
 //////////////////////////////////////////////////////////////////////////////////
 
 //	Debug mode:
-	localparam							debugMode		= 0;		// Generate additional hardware
+	localparam							debugMode		= 1;		// Generate additional hardware
 	
 	//	Generate parameters:
 	localparam 							ROLength 		= 3;		// Configurable ring oscillator length.
@@ -40,11 +40,11 @@ module controller(
 	
 //	Controller paraneters:
 	localparam							NBCheckbits		= 16;		// Number of least significant bits to be used to check coherent sampler counter magnitude.
-	localparam [NBCheckbits-1:0]	CSCntThreshL	= 94;		// Coherent sampler counter minimum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshL	= 103;	// Coherent sampler counter minimum allowed value.
 	localparam [NBCheckbits-1:0]	CSCntThreshH	= 192;	// Coherent sampler counter maximum allowed value.
 	localparam							NBSamplesLog	= 7;		// Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
 	localparam [NBSamplesLog-1:0]	samplesMin		= 64;		// Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
-	localparam							MaxLockCntLog	= 8;		// Number of bits for the lock counter, which prevents oscillation locks.
+	localparam							MaxLockCntLog	= 10;		// Number of bits for the lock counter, which prevents oscillation locks.
 	
 //	RO counter parameters:
 	localparam 							ROCntLength		= 16;		// Frequency counter width.
