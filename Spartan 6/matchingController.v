@@ -101,6 +101,7 @@ module matchingController #(
 				if (lockCnt == {MaxLockCntLog{1'b1}}) begin
 					matched 	<= 1'b0;
 					locked	<= 1'b1;
+					goodSamples <= 0;
 					ROSel <= ROSel + 1;
 					if (ROSel == {ROLength*4{1'b1}}) begin
 						noFound <= 1'b1;
