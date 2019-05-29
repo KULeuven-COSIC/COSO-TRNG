@@ -24,7 +24,7 @@ module controller(
 		output 			dataP,		// Positive differential data output.
 		output 			dataN,		// Negative differential data output.
 		output 			syncOutP,	// Positive differential synchronization output.
-		output 			syncOutN,	// Negative differential synchronization output.
+		output 			syncOutN	// Negative differential synchronization output.
 	);
 	
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ module controller(
 	
 //	Controller paraneters:
 	localparam							NBCheckbits		= 16;		// Number of least significant bits to be used to check coherent sampler counter magnitude.
-	localparam [NBCheckbits-1:0]	CSCntThreshL	= 94;		// Coherent sampler counter minimum allowed value.
+	localparam [NBCheckbits-1:0]	CSCntThreshL	= 74;		// Coherent sampler counter minimum allowed value.
 	localparam [NBCheckbits-1:0]	CSCntThreshH	= 192;	// Coherent sampler counter maximum allowed value.
 	localparam							NBSamplesLog	= 7;		// Number of accumulated samples to check the coherent sampler counter magnitude = 2^('NBSamplesLog').
 	localparam [NBSamplesLog-1:0]	samplesMin		= 64;		// Minimal number of coherent sampler counter values that should be within the given bounds for a configuration to be selected.
