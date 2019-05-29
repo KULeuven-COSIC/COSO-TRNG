@@ -24,7 +24,7 @@ module controller(
 		output 			dataP,		// Positive differential data output.
 		output 			dataN,		// Negative differential data output.
 		output 			syncOutP,	// Positive differential synchronization output.
-		output 			syncOutN	// Negative differential synchronization output.
+		output 			syncOutN		// Negative differential synchronization output.
 	);
 	
 //////////////////////////////////////////////////////////////////////////////////
