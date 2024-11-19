@@ -1,0 +1,53 @@
+{
+    "global" : {
+        "svg_width":    400,
+        "svg_height":   200
+    },
+    "axes": {
+        "stroke_width":     2,
+        "marg_mid_hor":     0.5,
+        "marg_mid_ver":     1.6,
+        "marg_bot":         0.15,
+        "marg_top":         0.9,
+        "marg_left":        0.1,
+        "marg_right":       0.95,
+        "font_size":        12,
+        "grid_col":         "#d5dbdb",
+        "grid_width":       1        
+    },
+    "data": {
+        "stroke_width":     2,
+        "cols":             ["#3498db", "#e74c3c", "#2ecc71", "#9b59b6", "#f1c40f", "#aab7b8", "#d35400", "#2c3e50"],
+        "marker_size":      7,
+        "fill_alpha":       0.5,
+        "fill_edge_width":  0,
+        "named_cols": {
+            "grey":         "#95a5a6",
+            "dark_grey":    "#2e4053",
+            "blue":         "#3498db",
+            "red":          "#e74c3c",
+            "green":        "#2ecc71",
+            "white":        "#ffffff",
+            "none":         "none",
+            "black":        "000000"
+        }
+    },
+    "label": {
+        "tick_maj_len":     6,
+        "tick_min_len":     3,
+        "font_name":        "Monospace",
+        "font_size":        10,
+        "tick_width":       1,
+        "max_nb_ticks":     15
+    },
+    "legend": {
+        "font_size":        12,
+        "handle_scale":     1,
+        "font_name":        "Monospace",
+        "handle_len":       2.5,
+        "face_color":       "#f9e79f",
+        "edge_color":       "black",
+        "frame_width":      1.5,
+        "frame_alpha":      0.75
+    }
+}
