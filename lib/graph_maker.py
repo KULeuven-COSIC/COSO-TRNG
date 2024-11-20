@@ -29,10 +29,12 @@ class GraphMaker:
 
     def __init__(self, file_name: str, param_file: Optional[str]=None,
                  figure_size: Tuple[int, int]=(1, 1), folder_name: str='',
-                 figure_height_scale: float=1):
+                 figure_height_scale: float=1,
+                 verbose: bool=False):
         self._file_name = file_name
         self._folder_name = folder_name
         self._figure_size = figure_size
+        self._verbose = verbose
         if param_file is None:
             param_file = GraphMaker._default_param_file
         self._param_file = param_file
@@ -779,8 +781,9 @@ class GraphMaker:
                             flier_xs.append(xi)
                             flier_ys.append(yi)
                     box_parts['fliers'][0].set_data((flier_xs, flier_ys)) # type: ignore
-                    print(f'Detected large number of fliers: '
-                        f'reduced from {nb_fliers} to {len(flier_xs)}.')
+                    if self._verbose:
+                        print(f'Detected large number of fliers: '
+                              f'reduced from {nb_fliers} to {len(flier_xs)}.')
         if label is not None:
             self.fill_between_y(ax, [position], data[0], data[0], where=[False],
                                 color=color, label=label)
@@ -883,8 +886,9 @@ class GraphMaker:
             kwargs['side'] = side
         else:
             if side != 'both':
-                print(f'Warning, the side argument is not compatible '
-                    f'with matplotlib version {MPL_VERSION}!')
+                if self._verbose:
+                    print(f'Warning, the side argument is not compatible '
+                          f'with matplotlib version {MPL_VERSION}!')
         if not hist:
             kwargs['widths'] = [0]
         color_str: Optional[str] = None

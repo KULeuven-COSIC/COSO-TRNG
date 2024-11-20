@@ -1,1 +1,4 @@
 *.pyc
+figures/data/
+figures/pdf/
+figures/svg/
