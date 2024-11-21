@@ -13,7 +13,7 @@ sys.path.append(getcwd())
 from lib import graph_maker as g_m # pylint: disable=wrong-import-position
 from lib import store_data as s_d # pylint: disable=wrong-import-position
 
-DATA_FOLDER = 'measurements/lp_variable_gp_s7'
+DATA_FOLDER = join('measurements', 'lp_variable_gp_s7')
 
 RO_NAMES: List[str] = ['GateVar', 'WireVar', 'LUTVar0', 'LUTVar5']
 RO_TYPES: List[str] = ['muxnetwork', 'wireonly', 'intralut0', 'intralut5']

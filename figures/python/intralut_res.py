@@ -1,4 +1,4 @@
-"""Generate intra LUT resolution figure."""
+"""Generate intra LUT resolution on Spartan 7 figure."""
 import argparse
 import sys
 import csv

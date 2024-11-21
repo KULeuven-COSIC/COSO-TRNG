@@ -140,6 +140,7 @@ if args.d:
 
     # Store calculated data:
     data: Optional[List[List[float]]] = []
+    assert data is not None
     for (ro_index, ro_type), stages, x_loc, y_loc \
         in it.product(enumerate(RO_TYPES), STAGES, X_LOCS, Y_LOCS):
         if (x_loc, y_loc) not in periods[ro_type][stages]:
@@ -160,16 +161,16 @@ else:
         if args.v:
             print(f'No data was stored at: {store_data.file_path}')
         sys.exit()
-    for ro_index, stages, x_loc, y_loc, res, ran in data:
-        ro_type = RO_TYPES[int(ro_index)]
+    for ro_index_f, stages_f, x_loc_f, y_loc_f, res, ran in data:
+        ro_type = RO_TYPES[int(ro_index_f)]
         if ro_type not in ranges:
             ranges[ro_type] = {}
             resolutions[ro_type] = {}
-        if int(stages) not in ranges[ro_type]:
-            ranges[ro_type][int(stages)] = {}
-            resolutions[ro_type][int(stages)] = {}
-        ranges[ro_type][int(stages)][(int(x_loc), int(y_loc))] = ran
-        resolutions[ro_type][int(stages)][(int(x_loc), int(y_loc))] = res
+        if int(stages_f) not in ranges[ro_type]:
+            ranges[ro_type][int(stages_f)] = {}
+            resolutions[ro_type][int(stages_f)] = {}
+        ranges[ro_type][int(stages_f)][(int(x_loc_f), int(y_loc_f))] = ran
+        resolutions[ro_type][int(stages_f)][(int(x_loc_f), int(y_loc_f))] = res
 
 graph_maker = g_m.GraphMaker('ranres_s7_variable_gp.svg', figure_size=(1, 1),
                              folder_name='figures')
