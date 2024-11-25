@@ -158,7 +158,7 @@ s_r_1s = [0.0] * NB_SAMPLES
 with open(file_name, 'w', encoding='utf-8') as csv_file:
     csv_writer = csv.writer(csv_file, delimiter=',')
     csv_writer.writerow(['CSC', 'minH (sim)', 'H (sim)', 'mean R (sim)', 'std R (sim)',
-                         'minH (norm)', 'H (norm)', 'mean R (sim)', 'std R (norm)'])
+                         'minH (norm)', 'H (norm)', 'mean R (norm)', 'std R (norm)'])
 
 for i in range(NB_SAMPLES):
     print(i)
