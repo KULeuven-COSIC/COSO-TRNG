@@ -15,4 +15,4 @@ This archive contains the following folders:
 
 The data contained in this archive supports the following publications:
 - Adriaan Peetermans, Vladimir Rožić, and Ingrid Verbauwhede. **[A Highly-Portable True Random Number Generator Based on Coherent Sampling](https://ieeexplore.ieee.org/abstract/document/8892076)**. In: *International Conference of Field Programmable Logic and Applications (FPL)*, Sept. 2019.
-- Adriaan Peetermans, Vladimir Rožić, and Ingrid Verbauwhede. **[Design and Analysis of Configurable Ring Oscillators for True Random Number Generation Based on Coherent Sampling](https://dl.acm.org/doi/abs/10.1145/3433166)**. In *ACM Transactions on Reconfigurable Technology and Systems (TRETS)*, vol. 14, no. 2, pp. 1-20, 2021.
+- Adriaan Peetermans, Vladimir Rožić, and Ingrid Verbauwhede. **[Design and Analysis of Configurable Ring Oscillators for True Random Number Generation Based on Coherent Sampling](https://dl.acm.org/doi/abs/10.1145/3433166)**. In: *ACM Transactions on Reconfigurable Technology and Systems (TRETS)*, vol. 14, no. 2, pp. 1-20, 2021.
